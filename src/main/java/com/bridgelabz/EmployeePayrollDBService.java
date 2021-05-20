@@ -107,7 +107,7 @@ public class EmployeePayrollDBService {
     }
 
     private int updateDataUsingPreparedStatement(String name, double salary) {
-        String sql = "UPDATE employee_payroll_2 SET salary = ? WHERE NAME = ?";
+        String sql = "UPDATE employee_payroll SET salary = ? WHERE NAME = ?";
         try (Connection connection = this.getConnection();) {
             PreparedStatement preparedStatementUpdate = connection.prepareStatement(sql);
             preparedStatementUpdate.setDouble(1, salary);
