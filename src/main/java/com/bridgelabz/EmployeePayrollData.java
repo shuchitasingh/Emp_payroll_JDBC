@@ -1,6 +1,5 @@
 package com.bridgelabz;
 
-import java.sql.*;
 import java.time.LocalDate;
 
 public class EmployeePayrollData {
