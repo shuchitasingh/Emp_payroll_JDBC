@@ -115,15 +115,9 @@ public class EmployeePayrollDBService {
         return 0;
     }
 
-<<<<<<< HEAD
     private int updateDataUsingPreparedStatement(String name,double salary) {
         String sql = "UPDATE employee_payroll_details SET salary = ? WHERE NAME = ?";
         try(Connection connection = this.getConnection();) {
-=======
-    private int updateDataUsingPreparedStatement(String name, double salary) {
-        String sql = "UPDATE employee_payroll SET salary = ? WHERE NAME = ?";
-        try (Connection connection = this.getConnection();) {
->>>>>>> a103bed6f3c497e859185df4968afdfb096d4fc6
             PreparedStatement preparedStatementUpdate = connection.prepareStatement(sql);
             preparedStatementUpdate.setDouble(1, salary);
             preparedStatementUpdate.setString(2, name);
@@ -132,6 +126,29 @@ public class EmployeePayrollDBService {
             e.printStackTrace();
         }
         return 0;
+    }
+    /**
+     * @param date1
+     * @param date2
+     * @return employee list in given date range
+     */
+    public List<EmployeePayrollData> getEmployeesInGivenDateRangeDB(String date1, String date2) {
+        String sql = String.format("SELECT * FROM employee_payroll_details where start between '%s' AND '%s';", date1, date2);
+        List<EmployeePayrollData> employeePayrollList = new ArrayList<EmployeePayrollData>();
+        try (Connection connection = this.getConnection();) {
+            Statement statement = connection.createStatement();
+            ResultSet resultSet = statement.executeQuery(sql);
+            while (resultSet.next()) {
+                int id = resultSet.getInt("id");
+                String name = resultSet.getString("name");
+                double salary = resultSet.getDouble("salary");
+                LocalDate startDate = resultSet.getDate("start").toLocalDate();
+                employeePayrollList.add(new EmployeePayrollData(id, name, salary, startDate));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return employeePayrollList;
     }
 
     private Connection getConnection() throws SQLException {

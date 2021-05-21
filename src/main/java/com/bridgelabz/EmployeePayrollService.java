@@ -75,13 +75,12 @@ public class EmployeePayrollService {
      * @return Employee Payroll Data List
      */
     public List<EmployeePayrollData> readData(IOService ioService) {
-        if(ioService.equals(IOService.FILE_IO))
+        if (ioService.equals(IOService.FILE_IO))
             return new EmployeePayrollFileIOService().readData();
-        else if(ioService.equals(IOService.DB_IO)) {
+        else if (ioService.equals(IOService.DB_IO)) {
             employeePayrollList = employeePayrollDBService.readData();
             return employeePayrollList;
-        }
-        else
+        } else
             return null;
     }
 
@@ -91,13 +90,13 @@ public class EmployeePayrollService {
      * @throws EmployeePayrollException
      */
     public void updateEmployeeSalary(String name, double salary, EmployeePayrollDBService.StatementType type) throws EmployeePayrollException {
-        int result = employeePayrollDBService.updateEmployeeData(name,salary,type);
+        int result = employeePayrollDBService.updateEmployeeData(name, salary, type);
         EmployeePayrollData employeePayrollData = null;
-        if(result == 0)
+        if (result == 0)
             throw new EmployeePayrollException(EmployeePayrollException.ExceptionType.UPDATE_FAIL, "Update Failed");
         else
             employeePayrollData = this.getEmployeePayrollData(name);
-        if(employeePayrollData!=null) {
+        if (employeePayrollData != null) {
             employeePayrollData.salary = salary;
         }
     }
@@ -108,7 +107,7 @@ public class EmployeePayrollService {
      */
     private EmployeePayrollData getEmployeePayrollData(String name) {
         EmployeePayrollData employeePayrollData = this.employeePayrollList.stream()
-                .filter(employee->employee.name.equals(name))
+                .filter(employee -> employee.name.equals(name))
                 .findFirst()
                 .orElse(null);
         return employeePayrollData;
@@ -123,5 +122,10 @@ public class EmployeePayrollService {
         return checkList.get(0).equals(getEmployeePayrollData(name));
 
     }
+
+    public List<EmployeePayrollData> getEmployeesInDateRange(String date1, String date2) {
+        List<EmployeePayrollData> employeesInGivenDateRangeList = employeePayrollDBService.getEmployeesInGivenDateRangeDB(date1, date2);
+        return employeesInGivenDateRangeList;
     }
+}
 

@@ -54,4 +54,12 @@ public class EmployeePayrollServiceTest {
         assertTrue(result);
     }
 
+    @Test
+    public void givenDateRangeForEmployee_WhenRetrievedUsingStatement_ShouldReturnProperData() throws EmployeePayrollException {
+        EmployeePayrollService employeePayrollService = new EmployeePayrollService();
+        List<EmployeePayrollData> employeePayrollData = employeePayrollService.readData(EmployeePayrollService.IOService.DB_IO);
+        List<EmployeePayrollData> employeeDataInGivenDateRange = employeePayrollService.getEmployeesInDateRange("2018-01-03","2019-11-13");
+        assertEquals(2, employeeDataInGivenDateRange.size());
+    }
+
 }
