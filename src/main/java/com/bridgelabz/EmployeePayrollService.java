@@ -1,5 +1,6 @@
 package com.bridgelabz;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -132,6 +133,10 @@ public class EmployeePayrollService {
         if(ioService.equals(IOService.DB_IO))
             return employeePayrollDBService.getAverageSalaryByGender();
         return null;
+    }
+
+    public void addEmployeeToPayroll(String name, double salary, LocalDate startDate, String gender) {
+        employeePayrollList.add(employeePayrollDBService.addEmployeeToPayroll(name,salary,startDate,gender));
     }
 }
 

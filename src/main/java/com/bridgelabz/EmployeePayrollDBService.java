@@ -1,11 +1,6 @@
 package com.bridgelabz;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -168,6 +163,24 @@ public class EmployeePayrollDBService {
         }
         return genderToAvgSalaryMap;
     }
+    public EmployeePayrollData addEmployeeToPayroll(String name, double salary, LocalDate startDate, String gender) {
+        int employeeId = -1;
+        EmployeePayrollData employeePayrollData = null;
+        String sql = String.format("INSERT INTO employee_payroll_details (name,gender,salary,start) VALUES ('%s','%s','%s','%s')", name,
+                gender, salary, Date.valueOf(startDate));
+        try(Connection connection = this.getConnection()){
+            Statement statement = connection.createStatement();
+            int rowAffected = statement.executeUpdate(sql, Statement.RETURN_GENERATED_KEYS);
+            if(rowAffected==1) {
+                ResultSet resultSet = statement.getGeneratedKeys();
+                if(resultSet.next()) employeeId =  resultSet.getInt(1);
+            }
+            employeePayrollData = new EmployeePayrollData(employeeId, name, salary, startDate);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return employeePayrollData;
+    }
 
     private Connection getConnection() throws SQLException {
         String jdbcURL = "jdbc:mysql://localhost:3306/payroll_service?useSSL=false";
@@ -179,4 +192,5 @@ public class EmployeePayrollDBService {
         System.out.println("Connection successful: " + connection);
         return connection;
     }
+
 }

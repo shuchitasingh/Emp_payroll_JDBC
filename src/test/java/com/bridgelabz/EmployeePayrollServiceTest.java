@@ -3,6 +3,7 @@ package com.bridgelabz;
 
 import org.junit.jupiter.api.Test;
 
+import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -73,5 +74,12 @@ public class EmployeePayrollServiceTest {
         assertTrue(averageSalaryByGender.get("M").equals(1000000.00)&&
                 averageSalaryByGender.get("F").equals(3000000.00));
     }
-
+    @Test
+    public void givenNewEmployee_WhenAdded_ShouldSyncWithDB() {
+        EmployeePayrollService employeePayrollService = new EmployeePayrollService();
+        employeePayrollService.readData(EmployeePayrollService.IOService.DB_IO);
+        employeePayrollService.addEmployeeToPayroll("Mark",50000000.00, LocalDate.now(),"M");
+        boolean result =  employeePayrollService.checkEmployeePayrollInSyncWithDB("Mark");
+        assertTrue(result);
+    }
 }
