@@ -115,9 +115,15 @@ public class EmployeePayrollDBService {
         return 0;
     }
 
+<<<<<<< HEAD
     private int updateDataUsingPreparedStatement(String name,double salary) {
         String sql = "UPDATE employee_payroll_details SET salary = ? WHERE NAME = ?";
         try(Connection connection = this.getConnection();) {
+=======
+    private int updateDataUsingPreparedStatement(String name, double salary) {
+        String sql = "UPDATE employee_payroll SET salary = ? WHERE NAME = ?";
+        try (Connection connection = this.getConnection();) {
+>>>>>>> a103bed6f3c497e859185df4968afdfb096d4fc6
             PreparedStatement preparedStatementUpdate = connection.prepareStatement(sql);
             preparedStatementUpdate.setDouble(1, salary);
             preparedStatementUpdate.setString(2, name);
