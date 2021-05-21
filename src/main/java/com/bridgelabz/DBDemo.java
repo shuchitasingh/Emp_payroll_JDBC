@@ -1,5 +1,6 @@
 package com.bridgelabz;
 
+import com.mysql.cj.jdbc.Driver;
 import java.sql.Connection;
 import java.sql.Driver;
 import java.sql.DriverManager;
@@ -13,7 +14,7 @@ public class DBDemo {
         String password = "admin1234";
         Connection connection;
         try {
-            Class.forName("com.mysql.jdbc.Driver");
+            Class.forName("com.mysql.cj.jdbc.Driver");
             System.out.println("Driver loaded");
         } catch (ClassNotFoundException e) {
             throw new IllegalStateException("Cannot find driver in classpath");
