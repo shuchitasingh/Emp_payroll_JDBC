@@ -7,7 +7,6 @@ import java.util.Map;
 import java.util.Scanner;
 
 public class EmployeePayrollService {
-
     public enum IOService {
         CONSOLE_IO, FILE_IO, DB_IO, REST_IO
     }
@@ -150,18 +149,20 @@ public class EmployeePayrollService {
     /**
      * @param date1
      * @param date2
+     * @param normalised
      * @return employee list in given date range
      */
-    public List<EmployeePayrollData> getEmployeesInDateRange(String date1, String date2) {
+    public List<EmployeePayrollData> getEmployeesInDateRange(String date1, String date2, NormalisationType normalised) {
         List<EmployeePayrollData> employeesInGivenDateRangeList = employeePayrollDBService.getEmployeesInGivenDateRangeDB(date1,date2);
         return employeesInGivenDateRangeList;
     }
 
     /**
      * @param ioService
+     * @param normalised
      * @return Employee name and avg salary map
      */
-    public Map<String, Double> readAverageSalaryByGender(IOService ioService) {
+    public Map<String, Double> readAverageSalaryByGender(IOService ioService, NormalisationType normalised) {
         if(ioService.equals(IOService.DB_IO))
             return employeePayrollDBService.getAverageSalaryByGender();
         return null;
@@ -171,4 +172,3 @@ public class EmployeePayrollService {
         employeePayrollList.add(employeePayrollDBService.addEmployeeToPayroll(name,salary,startDate,gender));
     }
 }
-

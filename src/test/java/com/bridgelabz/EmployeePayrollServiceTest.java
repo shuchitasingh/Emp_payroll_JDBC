@@ -29,12 +29,11 @@ public class EmployeePayrollServiceTest {
         System.out.println(employeeList);
         assertEquals(3, entries);
     }
-
     @Test
     public void givenEmployeePayrollInDB_WhenRetrieved_ShouldMatchEmployeeCount() {
         EmployeePayrollService employeePayrollService = new EmployeePayrollService();
         List<EmployeePayrollData> employeePayrollData = employeePayrollService.readData(EmployeePayrollService.IOService.DB_IO, EmployeePayrollService.NormalisationType.DENORMALISED);
-        assertEquals(4, employeePayrollData.size());
+        assertEquals(15, employeePayrollData.size());
     }
 
     @Test
@@ -59,7 +58,7 @@ public class EmployeePayrollServiceTest {
     public void givenDateRangeForEmployee_WhenRetrievedUsingStatement_ShouldReturnProperData() throws EmployeePayrollException {
         EmployeePayrollService employeePayrollService = new EmployeePayrollService();
         List<EmployeePayrollData> employeePayrollData = employeePayrollService.readData(EmployeePayrollService.IOService.DB_IO, EmployeePayrollService.NormalisationType.DENORMALISED);
-        List<EmployeePayrollData> employeeDataInGivenDateRange = employeePayrollService.getEmployeesInDateRange("2018-01-03","2019-11-13");
+        List<EmployeePayrollData> employeeDataInGivenDateRange = employeePayrollService.getEmployeesInDateRange("2018-01-01","2019-11-15", EmployeePayrollService.NormalisationType.NORMALISED);
         assertEquals(2, employeeDataInGivenDateRange.size());
     }
 
@@ -68,9 +67,9 @@ public class EmployeePayrollServiceTest {
     public void givenPayrollData_WhenAverageSalaryRetrievedByGender_ShouldReturnProperValue() {
         EmployeePayrollService employeePayrollService = new EmployeePayrollService();
         employeePayrollService.readData(EmployeePayrollService.IOService.DB_IO, EmployeePayrollService.NormalisationType.DENORMALISED);
-        Map<String,Double> averageSalaryByGender  = employeePayrollService.readAverageSalaryByGender(EmployeePayrollService.IOService.DB_IO);
+        Map<String,Double> averageSalaryByGender  = employeePayrollService.readAverageSalaryByGender(EmployeePayrollService.IOService.DB_IO, EmployeePayrollService.NormalisationType.NORMALISED);
         System.out.println(averageSalaryByGender);
-        assertTrue(averageSalaryByGender.get("M").equals(1800000.00)&&
+        assertTrue(averageSalaryByGender.get("M").equals(46230769.23076923)&&
                 averageSalaryByGender.get("F").equals(3000000.00));
     }
 
@@ -102,6 +101,33 @@ public class EmployeePayrollServiceTest {
         employeePayrollService.updateEmployeeSalary("Terisa",3000000.00, EmployeePayrollDBService.StatementType.STATEMENT, EmployeePayrollService.NormalisationType.NORMALISED);
         boolean result = employeePayrollService.checkEmployeePayrollInSyncWithDB("Terisa", EmployeePayrollService.NormalisationType.NORMALISED);
         assertTrue(result);
+    }
+
+    @Test
+    public void givenNewSalaryForEmployeeInNormalisedDB_WhenUpdatedUsingPreparedStatement_ShouldSyncWithDatabase() throws EmployeePayrollException {
+        EmployeePayrollService employeePayrollService = new EmployeePayrollService();
+        List<EmployeePayrollData> employeePayrollData = employeePayrollService.readData(EmployeePayrollService.IOService.DB_IO, EmployeePayrollService.NormalisationType.NORMALISED);
+        employeePayrollService.updateEmployeeSalary("Terisa",3000000.00, EmployeePayrollDBService.StatementType.PREPARED_STATEMENT, EmployeePayrollService.NormalisationType.NORMALISED);
+        boolean result = employeePayrollService.checkEmployeePayrollInSyncWithDB("Terisa", EmployeePayrollService.NormalisationType.NORMALISED);
+        assertTrue(result);
+    }
+
+    @Test
+    public void givenDateRangeForEmployeeInNormalisedDB_WhenRetrievedUsingStatement_ShouldReturnProperData() throws EmployeePayrollException {
+        EmployeePayrollService employeePayrollService = new EmployeePayrollService();
+        List<EmployeePayrollData> employeePayrollData = employeePayrollService.readData(EmployeePayrollService.IOService.DB_IO, EmployeePayrollService.NormalisationType.NORMALISED);
+        List<EmployeePayrollData> employeeDataInGivenDateRange = employeePayrollService.getEmployeesInDateRange("2018-01-03","2019-11-13", EmployeePayrollService.NormalisationType.NORMALISED);
+        assertEquals(2, employeeDataInGivenDateRange.size());
+    }
+
+    @Test
+    public void givenPayrollDataForNormalisedDB_WhenAverageSalaryRetrievedByGender_ShouldReturnProperValue() {
+        EmployeePayrollService employeePayrollService = new EmployeePayrollService();
+        employeePayrollService.readData(EmployeePayrollService.IOService.DB_IO, EmployeePayrollService.NormalisationType.NORMALISED);
+        Map<String,Double> averageSalaryByGender  = employeePayrollService.readAverageSalaryByGender(EmployeePayrollService.IOService.DB_IO, EmployeePayrollService.NormalisationType.NORMALISED);
+        System.out.println(averageSalaryByGender);
+        assertTrue(averageSalaryByGender.get("M").equals(55000.00)&&
+                averageSalaryByGender.get("F").equals(3000000.00));
     }
 
 }
