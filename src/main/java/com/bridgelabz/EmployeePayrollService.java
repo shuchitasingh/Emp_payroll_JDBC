@@ -9,14 +9,20 @@ import java.util.Scanner;
 public class EmployeePayrollService {
 
     public enum IOService {
-        CONSOLE_IO, FILE_IO, DB_IO,REST_IO
+        CONSOLE_IO, FILE_IO, DB_IO, REST_IO
+    }
+
+    public enum NormalisationType{
+        NORMALISED,DENORMALISED
     }
 
     public List<EmployeePayrollData> employeePayrollList;
     private EmployeePayrollDBService employeePayrollDBService;
+    private EmployeePayrollDBServiceNormalised employeePayrollDBServiceNormalised;
 
     public EmployeePayrollService() {
         employeePayrollDBService = EmployeePayrollDBService.getInstance();
+        employeePayrollDBServiceNormalised = EmployeePayrollDBServiceNormalised.getInstance();
     }
 
     public EmployeePayrollService(List<EmployeePayrollData> employeePayrollList) {
@@ -76,13 +82,19 @@ public class EmployeePayrollService {
      * @param ioService
      * @return Employee Payroll Data List
      */
-    public List<EmployeePayrollData> readData(IOService ioService) {
-        if (ioService.equals(IOService.FILE_IO))
+    public List<EmployeePayrollData> readData(IOService ioService,NormalisationType normalisationType) {
+        if(ioService.equals(IOService.FILE_IO))
             return new EmployeePayrollFileIOService().readData();
-        else if (ioService.equals(IOService.DB_IO)) {
-            employeePayrollList = employeePayrollDBService.readData();
+        else if(ioService.equals(IOService.DB_IO)) {
+            if(normalisationType.equals(NormalisationType.DENORMALISED)) {
+                employeePayrollList = employeePayrollDBService.readData();
+            }
+            else if(normalisationType.equals(NormalisationType.NORMALISED)) {
+                employeePayrollList = employeePayrollDBServiceNormalised.readData();
+            }
             return employeePayrollList;
-        } else
+        }
+        else
             return null;
     }
 
@@ -91,14 +103,20 @@ public class EmployeePayrollService {
      * @param salary
      * @throws EmployeePayrollException
      */
-    public void updateEmployeeSalary(String name, double salary, EmployeePayrollDBService.StatementType type) throws EmployeePayrollException {
-        int result = employeePayrollDBService.updateEmployeeData(name, salary, type);
+    public void updateEmployeeSalary(String name, double salary, EmployeePayrollDBService.StatementType type, NormalisationType normalisationType) throws EmployeePayrollException {
+        int result = 0;
+        if(normalisationType.equals(NormalisationType.DENORMALISED)) {
+            result = employeePayrollDBService.updateEmployeeData(name,salary,type);
+        }
+        else if(normalisationType.equals(NormalisationType.NORMALISED)) {
+            result = employeePayrollDBServiceNormalised.updateEmployeeData(name,salary,type);
+        }
         EmployeePayrollData employeePayrollData = null;
-        if (result == 0)
+        if(result == 0)
             throw new EmployeePayrollException(EmployeePayrollException.ExceptionType.UPDATE_FAIL, "Update Failed");
         else
             employeePayrollData = this.getEmployeePayrollData(name);
-        if (employeePayrollData != null) {
+        if(employeePayrollData!=null) {
             employeePayrollData.salary = salary;
         }
     }
@@ -109,7 +127,7 @@ public class EmployeePayrollService {
      */
     private EmployeePayrollData getEmployeePayrollData(String name) {
         EmployeePayrollData employeePayrollData = this.employeePayrollList.stream()
-                .filter(employee -> employee.name.equals(name))
+                .filter(employee->employee.name.equals(name))
                 .findFirst()
                 .orElse(null);
         return employeePayrollData;
@@ -119,16 +137,30 @@ public class EmployeePayrollService {
      * @param name
      * @return true if data is in sync
      */
-    public boolean checkEmployeePayrollInSyncWithDB(String name) {
-        List<EmployeePayrollData> checkList = employeePayrollDBService.getEmployeePayrollData(name);
+    public boolean checkEmployeePayrollInSyncWithDB(String name,NormalisationType normalisationType) {
+        List<EmployeePayrollData> checkList = null;
+        if(normalisationType.equals(NormalisationType.DENORMALISED))
+            checkList = employeePayrollDBService.getEmployeePayrollData(name);
+        else if(normalisationType.equals(NormalisationType.NORMALISED))
+            checkList = employeePayrollDBServiceNormalised.getEmployeePayrollData(name);
         return checkList.get(0).equals(getEmployeePayrollData(name));
 
     }
 
+    /**
+     * @param date1
+     * @param date2
+     * @return employee list in given date range
+     */
     public List<EmployeePayrollData> getEmployeesInDateRange(String date1, String date2) {
-        List<EmployeePayrollData> employeesInGivenDateRangeList = employeePayrollDBService.getEmployeesInGivenDateRangeDB(date1, date2);
+        List<EmployeePayrollData> employeesInGivenDateRangeList = employeePayrollDBService.getEmployeesInGivenDateRangeDB(date1,date2);
         return employeesInGivenDateRangeList;
     }
+
+    /**
+     * @param ioService
+     * @return Employee name and avg salary map
+     */
     public Map<String, Double> readAverageSalaryByGender(IOService ioService) {
         if(ioService.equals(IOService.DB_IO))
             return employeePayrollDBService.getAverageSalaryByGender();
