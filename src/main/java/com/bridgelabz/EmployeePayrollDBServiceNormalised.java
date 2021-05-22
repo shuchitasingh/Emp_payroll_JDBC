@@ -142,7 +142,7 @@ public class EmployeePayrollDBServiceNormalised {
     }
 
     private Connection getConnection() throws SQLException {
-        String jdbcURL = "jdbc:mysql://localhost:3306/payroll_service?allowPublicKeyRetrieval=true&useSSL=false";
+        String jdbcURL = "jdbc:mysql://localhost:3306/payroll_service?useSSL=false";
         String userName = "root";
         String password = "admin1234";
         Connection connection;

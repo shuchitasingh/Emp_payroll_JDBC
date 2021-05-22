@@ -70,7 +70,7 @@ public class EmployeePayrollServiceTest {
         employeePayrollService.readData(EmployeePayrollService.IOService.DB_IO, EmployeePayrollService.NormalisationType.DENORMALISED);
         Map<String,Double> averageSalaryByGender  = employeePayrollService.readAverageSalaryByGender(EmployeePayrollService.IOService.DB_IO);
         System.out.println(averageSalaryByGender);
-        assertTrue(averageSalaryByGender.get("M").equals(18000000.00)&&
+        assertTrue(averageSalaryByGender.get("M").equals(1800000.00)&&
                 averageSalaryByGender.get("F").equals(3000000.00));
     }
 
